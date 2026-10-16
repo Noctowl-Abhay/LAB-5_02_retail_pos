@@ -1,5 +1,3 @@
-import json
-import logging
 import random
 
 price_list = {"apple": 12.0, "orange": 15.0, "banana": 8.0}
@@ -34,7 +32,6 @@ def update_stock(item, qty):
     return 0.0
 
 def log_transaction(receipt_text):
-    # Fixed: Use context manager and utf-8 encoding to prevent resource leaks
     with open("pos_log.txt", "a", encoding="utf-8") as log_file:
         log_file.write(receipt_text + "\n")
 
