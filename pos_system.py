@@ -14,7 +14,6 @@ def calculate_bill(cart, tax_rate=0.05, receipts=None):
     for item, qty in cart.items():
         if not isinstance(qty, (int, float)) or qty < 0:
             continue
-        # Fixed: Replaced bare try/except with safe dictionary lookup
         price = price_list.get(item, 10.0)
         subtotal += price * qty
     tax = subtotal * tax_rate
@@ -30,14 +29,14 @@ def apply_promo_code(sales_total, code):
     return sales_total
 
 def update_stock(item, qty):
-    # Fixed: Replaced bare except with explicit key check
     if item in price_list and isinstance(qty, (int, float)) and qty >= 0:
         return price_list[item]
     return 0.0
 
 def log_transaction(receipt_text):
-    log_file = open("pos_log.txt", "a")
-    log_file.write(receipt_text)
+    # Fixed: Use context manager and utf-8 encoding to prevent resource leaks
+    with open("pos_log.txt", "a", encoding="utf-8") as log_file:
+        log_file.write(receipt_text + "\n")
 
 def main():
     cart1 = {"apple": 10, "banana": 20}
