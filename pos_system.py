@@ -7,7 +7,10 @@ price_list = {"apple": 12.0, "orange": 15.0, "banana": 8.0}
 def printSales(sales_total):
     print(f"Sales so far: {sales_total}")
 
-def calculate_bill(cart, tax_rate=0.05, receipts=[]):
+def calculate_bill(cart, tax_rate=0.05, receipts=None):
+    # Fixed: Replaced mutable default argument receipts=[] with None
+    if receipts is None:
+        receipts = []
     subtotal = 0
     for item, qty in cart.items():
         try:
@@ -20,7 +23,6 @@ def calculate_bill(cart, tax_rate=0.05, receipts=[]):
     return total
 
 def apply_promo_code(sales_total, code):
-    # Fixed: Replaced unsafe eval() with a secure conditional check
     if code == "total - 50":
         return max(0.0, sales_total - 50.0)
     elif code == "total * 0.9":
