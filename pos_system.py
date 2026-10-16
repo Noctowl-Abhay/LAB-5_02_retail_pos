@@ -2,7 +2,8 @@ import random
 
 price_list = {"apple": 12.0, "orange": 15.0, "banana": 8.0}
 
-def printSales(sales_total):
+def print_sales(sales_total):
+    # Fixed: Renamed printSales to snake_case print_sales
     print(f"Sales so far: {sales_total}")
 
 def calculate_bill(cart, tax_rate=0.05, receipts=None):
@@ -46,6 +47,6 @@ def main():
     code = input("Enter promo code (e.g. total - 50): ") or "total - 50"
     final_total = apply_promo_code(sales_total, code)
     print(f"After your promo: {final_total}")
-    printSales(sales_total)
+    print_sales(sales_total)
 
 main()
