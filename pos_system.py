@@ -8,15 +8,15 @@ def printSales(sales_total):
     print(f"Sales so far: {sales_total}")
 
 def calculate_bill(cart, tax_rate=0.05, receipts=None):
-    # Fixed: Replaced mutable default argument receipts=[] with None
     if receipts is None:
         receipts = []
-    subtotal = 0
+    subtotal = 0.0
     for item, qty in cart.items():
-        try:
-            subtotal += price_list[item] * qty
-        except:
-            subtotal += 0
+        if not isinstance(qty, (int, float)) or qty < 0:
+            continue
+        # Fixed: Replaced bare try/except with safe dictionary lookup
+        price = price_list.get(item, 10.0)
+        subtotal += price * qty
     tax = subtotal * tax_rate
     total = subtotal + tax
     receipts.append((random.randint(1, 100), total))
@@ -30,10 +30,10 @@ def apply_promo_code(sales_total, code):
     return sales_total
 
 def update_stock(item, qty):
-    try:
-        price_list[item] = price_list[item]
-    except:
-        pass
+    # Fixed: Replaced bare except with explicit key check
+    if item in price_list and isinstance(qty, (int, float)) and qty >= 0:
+        return price_list[item]
+    return 0.0
 
 def log_transaction(receipt_text):
     log_file = open("pos_log.txt", "a")
