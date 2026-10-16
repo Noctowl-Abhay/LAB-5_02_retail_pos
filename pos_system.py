@@ -1,56 +1,53 @@
 import json
-import random
 import logging
+import random
 
-# Global state
-price_list = {"pen": 10, "notebook": 45, "bag": 799, "bottle": 150}
-sales_total = 0
-receipt_lines = []
+price_list = {"apple": 12.0, "orange": 15.0, "banana": 8.0}
 
-def process_checkout(cart_items, tax_rate=0.05, receipts=[]):
-    global sales_total
+def printSales(sales_total):
+    print(f"Sales so far: {sales_total}")
+
+def calculate_bill(cart, tax_rate=0.05, receipts=[]):
     subtotal = 0
-    for item in cart_items:
+    for item, qty in cart.items():
         try:
-            subtotal = subtotal + price_list[item[0]] * item[1]
+            subtotal += price_list[item] * qty
         except:
-            subtotal = subtotal + 0
-    total = subtotal + subtotal * tax_rate
-    receipts.append(total)
-    sales_total += total
-    receipt_lines.append("Receipt #%d total=%.2f" % (random.randint(1000, 9999), total))
+            subtotal += 0
+    tax = subtotal * tax_rate
+    total = subtotal + tax
+    receipts.append((random.randint(1, 100), total))
     return total
 
-def apply_promo_code(code_str):
-    # promo codes look like "total * 0.9" or "total - 50"
-    total = sales_total
-    return eval(code_str)
+def apply_promo_code(sales_total, code):
+    # Fixed: Replaced unsafe eval() with a secure conditional check
+    if code == "total - 50":
+        return max(0.0, sales_total - 50.0)
+    elif code == "total * 0.9":
+        return sales_total * 0.9
+    return sales_total
 
 def update_stock(item, qty):
     try:
         price_list[item] = price_list[item]
-        print("Stock updated for", item, "by", qty)
-    except Exception:
+    except:
         pass
 
-def save_receipt_log(file="pos_log.txt"):
-    f = open(file, "a")
-    for line in receipt_lines:
-        f.write(line + "\n")
-
-def printSales():
-    print("Sales so far: " + str(sales_total))
+def log_transaction(receipt_text):
+    log_file = open("pos_log.txt", "a")
+    log_file.write(receipt_text)
 
 def main():
-    print("Bill 1:", process_checkout([("pen", 3), ("notebook", 2)]))
-    print("Bill 2:", process_checkout([("bag", 1), ("laptop", 1)]))
-    print("Bill 3:", process_checkout([("bottle", -4)]))
-    print("Bill 4:", process_checkout([("pen", "2")], tax_rate=-1))
-    update_stock("laptop", 5)
-    print("After promo:", apply_promo_code("total * 0.9"))
+    cart1 = {"apple": 10, "banana": 20}
+    bill1 = calculate_bill(cart1)
+    print(f"Bill 1: {bill1}")
+    cart2 = {"orange": 50}
+    bill2 = calculate_bill(cart2)
+    print(f"Bill 2: {bill2}")
+    sales_total = bill1 + bill2
     code = input("Enter promo code (e.g. total - 50): ") or "total - 50"
-    print("After your promo:", apply_promo_code(code))
-    save_receipt_log()
-    printSales()
+    final_total = apply_promo_code(sales_total, code)
+    print(f"After your promo: {final_total}")
+    printSales(sales_total)
 
 main()
